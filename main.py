@@ -28,9 +28,9 @@ gravatar = Gravatar(app)
 
 
 def admin_only(fun):
-    def wrapper():
+    def wrapper(*args, **kwargs):
         if current_user.id == 1:
-            return fun()
+            return fun(*args, **kwargs)
         else:
             return abort(403)
     return wrapper
