@@ -17,7 +17,7 @@ ckeditor = CKEditor(app)
 Bootstrap(app)
 
 ##CONNECT TO DB
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("DATABASE_URI")
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("DATABASE_URI", "sqlite:///blog.db")
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
@@ -49,9 +49,6 @@ class User(UserMixin, db.Model):
     comments = relationship("Comment", back_populates="comment_author")
 
 
-db.create_all()
-
-
 class BlogPost(db.Model):
     __tablename__ = "blog_posts"
     id = Column(Integer, primary_key=True)
@@ -65,9 +62,6 @@ class BlogPost(db.Model):
     comments = relationship("Comment", back_populates="post")
 
 
-db.create_all()
-
-
 class Comment(db.Model):
     __tablename__ = "comments"
     id = Column(Integer, primary_key=True)
@@ -78,7 +72,8 @@ class Comment(db.Model):
     post = relationship("BlogPost", back_populates="comments")
 
 
-db.create_all()
+if app.before_first_request:
+    db.create_all()
 
 
 @login_manager.user_loader
